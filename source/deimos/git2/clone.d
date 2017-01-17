@@ -12,7 +12,7 @@ extern (C):
 struct git_clone_options {
 	uint version_ = GIT_CLONE_OPTIONS_VERSION;
 
-	git_checkout_opts checkout_opts;
+	git_checkout_options checkout_opts;
 	git_remote_callbacks remote_callbacks;
 
 	int bare;
@@ -29,4 +29,4 @@ int git_clone(
 		const(char)* url,
 		const(char)* local_path,
 		const(git_clone_options)* options);
-int git_clone_into(git_repository *repo, git_remote *remote, const(git_checkout_opts)* co_opts, const(char)* branch);
+int git_clone_into(git_repository *repo, git_remote *remote, const(git_checkout_options)* co_opts, const(char)* branch);

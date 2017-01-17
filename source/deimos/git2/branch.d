@@ -3,6 +3,7 @@ module deimos.git2.branch;
 import deimos.git2.common;
 import deimos.git2.oid;
 import deimos.git2.types;
+import deimos.git2.buffer;
 
 extern (C):
 
@@ -12,6 +13,9 @@ int git_branch_create(
 	const(char)* branch_name,
 	const(git_commit)* target,
 	int force);
+
+int git_branch_create_from_annotated(git_reference **ref_out, git_repository *repository, const(char)* branch_name, const(git_annotated_commit)* commit, int force);
+
 int git_branch_delete(git_reference *branch);
 
 struct git_branch_iterator {
@@ -38,15 +42,9 @@ int git_branch_upstream(
 	git_reference **out_,
 	git_reference *branch);
 int git_branch_set_upstream(git_reference *branch, const(char)* upstream_name);
-int git_branch_upstream_name(
-	char *tracking_branch_name_out,
-	size_t buffer_size,
-	git_repository *repo,
-	const(char)* canonical_branch_name);
+int git_branch_upstream_name(git_buf *out_, git_repository *repo, const(char)* refname);
+
 int git_branch_is_head(
 	git_reference *branch);
-int git_branch_remote_name(
-	char *remote_name_out,
-	size_t buffer_size,
-	git_repository *repo,
-	const(char)* canonical_branch_name);
+int git_branch_remote_name(git_buf *out_, git_repository *repo, const(char)* canonical_branch_name);
+int git_branch_upstream_remote(git_buf *buf, git_repository *repo, const(char)* refname);

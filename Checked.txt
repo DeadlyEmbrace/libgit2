@@ -1,0 +1,15 @@
+---
+Legend
+0 - No changes
+1 - Changes
+  - Partial changes
+---
+
+[0] attr.d
+[1] blame.d
+[1] blob.d
+[1] branch.d
+[1] buffer.d
+[1] checkout.d
+
+[ ] types.d

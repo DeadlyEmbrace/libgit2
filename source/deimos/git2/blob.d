@@ -19,13 +19,9 @@ int git_blob_filtered_content(git_buf *out_, git_blob *blob, const(char)* as_pat
 int git_blob_create_fromworkdir(git_oid *id, git_repository *repo, const(char)* relative_path);
 int git_blob_create_fromdisk(git_oid *id, git_repository *repo, const(char)* path);
 
-alias git_blob_chunk_cb = int function(char *content, size_t max_length, void *payload);
+int git_blob_create_fromstream(git_writestream **out_, git_repository *repo, const(char)* hintpath);
+int git_blob_create_fromstream_commit(git_oid *out_, git_writestream *stream);
 
-int git_blob_create_fromchunks(
-	git_oid *id,
-	git_repository *repo,
-	const(char)* hintpath,
-	git_blob_chunk_cb callback,
-	void *payload);
 int git_blob_create_frombuffer(git_oid *oid, git_repository *repo, const(void)* buffer, size_t len);
 int git_blob_is_binary(git_blob *blob);
+int git_blob_dup(git_blob **out_, git_blob *source);

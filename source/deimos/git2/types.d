@@ -168,6 +168,12 @@ struct git_reference
     @disable this(this);
 }
 
+struct git_annotated_commit
+{
+    @disable this();
+    @disable this(this);
+}
+
 struct git_merge_head
 {
     @disable this();
@@ -270,4 +276,10 @@ enum git_submodule_ignore_t {
     GIT_SUBMODULE_IGNORE_ALL       = 4,
 
     GIT_SUBMODULE_IGNORE_DEFAULT   = 0
+}
+
+struct git_writestream {
+    int *write (git_writestream* stream, const(char)* buffer, size_t len);
+    int *close (git_writestream* stream);
+    void *free (git_writestream* stream);
 }
