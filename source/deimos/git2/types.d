@@ -250,6 +250,21 @@ struct git_transfer_progress
 
 alias git_transfer_progress_callback = int function(const(git_transfer_progress)* stats, void* payload);
 
+enum git_cert_t
+{
+    GIT_CERT_NONE,
+    GIT_CERT_X509,
+    GIT_CERT_HOSTKEY_LIBSSH2,
+    GIT_CERT_STRARRAY
+}
+
+struct git_cert
+{
+    git_cert_t cert_type;
+}
+
+alias git_transport_certificate_check_cb = int function(git_cert *cert, int valid, const(char)* host, void *payload);
+
 struct git_submodule
 {
     @disable this();

@@ -2,6 +2,7 @@
 Legend
 0 - No changes
 1 - Changes
+2 - New file
   - Partial changes
 ---
 
@@ -11,5 +12,7 @@ Legend
 [1] branch.d
 [1] buffer.d
 [1] checkout.d
+[2] cherrypick.d
+[1] clone.d
 
 [ ] types.d

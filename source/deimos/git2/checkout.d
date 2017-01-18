@@ -71,7 +71,7 @@ alias git_checkout_perfdata_cb = void function(
 	void *payload);
 
 struct git_checkout_options {
-	uint version_ = GIT_CHECKOUT_OPTS_VERSION;
+	uint version_ = GIT_CHECKOUT_OPTIONS_VERSION;
 
 	uint checkout_strategy;
 
@@ -94,8 +94,8 @@ struct git_checkout_options {
 	void *perfdata_payload;
 }
 
-enum GIT_CHECKOUT_OPTS_VERSION = 1;
-enum git_checkout_options GIT_CHECKOUT_OPTS_INIT = { GIT_CHECKOUT_OPTS_VERSION };
+enum GIT_CHECKOUT_OPTIONS_VERSION = 1;
+enum git_checkout_options GIT_CHECKOUT_OPTS_INIT = { GIT_CHECKOUT_OPTIONS_VERSION };
 
 int git_checkout_init_options(git_checkout_options *opts, uint version_);
 

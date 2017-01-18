@@ -4,6 +4,7 @@ import deimos.git2.common;
 import deimos.git2.indexer;
 import deimos.git2.net;
 import deimos.git2.oid;
+import deimos.git2.proxy;
 import deimos.git2.refspec;
 import deimos.git2.repository;
 import deimos.git2.strarray;
@@ -85,15 +86,38 @@ struct git_remote_callbacks {
 enum GIT_REMOTE_CALLBACKS_VERSION = 1;
 enum git_remote_callbacks GIT_REMOTE_CALLBACKS_INIT = { GIT_REMOTE_CALLBACKS_VERSION };
 
+enum git_fetch_prune_t
+{
+	GIT_FETCH_PRUNE_UNSPECIFIED,
+	GIT_FETCH_PRUNE,
+	GIT_FETCH_NO_PRUNE
+}
+
 int git_remote_set_callbacks(git_remote *remote, git_remote_callbacks *callbacks);
 const(git_transfer_progress)*  git_remote_stats(git_remote *remote);
 
 enum git_remote_autotag_option_t {
-	GIT_REMOTE_DOWNLOAD_TAGS_AUTO = 0,
-	GIT_REMOTE_DOWNLOAD_TAGS_NONE = 1,
-	GIT_REMOTE_DOWNLOAD_TAGS_ALL = 2
+	GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED = 0,
+	GIT_REMOTE_DOWNLOAD_TAGS_AUTO = 1,
+	GIT_REMOTE_DOWNLOAD_TAGS_NONE = 2,
+	GIT_REMOTE_DOWNLOAD_TAGS_ALL = 3
 }
 mixin _ExportEnumMembers!git_remote_autotag_option_t;
+
+struct git_fetch_options
+{
+	int version_ = GIT_FETCH_OPTIONS_VERSION;
+	git_remote_callbacks callbacks;
+	git_fetch_prune_t prune;
+	int update_fetchhead;
+	git_remote_autotag_option_t download_tags;
+	git_proxy_options proxy_opts;
+	git_strarray custom_headers;
+}
+
+enum GIT_FETCH_OPTIONS_VERSION = 1;
+enum git_fetch_options GIT_FETCH_OPTIONS_INIT = { GIT_FETCH_OPTIONS_VERSION, GIT_REMOTE_CALLBACKS_INIT, git_fetch_prune_t.GIT_FETCH_PRUNE_UNSPECIFIED, 1,
+				 git_remote_autotag_option_t.GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED, GIT_PROXY_OPTIONS_INIT };
 
 git_remote_autotag_option_t git_remote_autotag(git_remote *remote);
 void git_remote_set_autotag(
