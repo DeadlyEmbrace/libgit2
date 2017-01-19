@@ -168,6 +168,12 @@ struct git_reference
     @disable this(this);
 }
 
+struct git_transaction
+{
+    @disable this();
+    @disable this(this);
+}
+
 struct git_annotated_commit
 {
     @disable this();

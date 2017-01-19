@@ -14,5 +14,10 @@ Legend
 [1] checkout.d
 [2] cherrypick.d
 [1] clone.d
+[1] commit.d
+[1] common.d
+[1] config.d
 
+[2] proxy.d
+[ ] remote.d
 [ ] types.d

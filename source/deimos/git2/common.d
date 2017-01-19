@@ -20,15 +20,16 @@ enum GIT_OID_HEX_ZERO = "0000000000000000000000000000000000000000";
 
 void git_libgit2_version(int *major, int *minor, int *rev);
 
-enum git_cap_t
+enum git_feature_t
 {
-	GIT_CAP_THREADS			= ( 1 << 0 ),
-	GIT_CAP_HTTPS			= ( 1 << 1 ),
-	GIT_CAP_SSH				= ( 1 << 2 )
+	GIT_FEATURE_THREADS	= (1 << 0),
+	GIT_FEATURE_HTTPS = (1 << 1),
+	GIT_FEATURE_SSH = (1 << 2),
+	GIT_FEATURE_NSEC = (1 << 3),
 }
-mixin _ExportEnumMembers!git_cap_t;
+mixin _ExportEnumMembers!git_feature_t;
 
-int git_libgit2_capabilities();
+int git_libgit2_features();
 
 enum git_libgit2_opt_t
 {
@@ -43,7 +44,12 @@ enum git_libgit2_opt_t
 	GIT_OPT_ENABLE_CACHING,
 	GIT_OPT_GET_CACHED_MEMORY,
 	GIT_OPT_GET_TEMPLATE_PATH,
-	GIT_OPT_SET_TEMPLATE_PATH
+	GIT_OPT_SET_TEMPLATE_PATH,
+	GIT_OPT_SET_SSL_CERT_LOCATIONS,
+	GIT_OPT_SET_USER_AGENT,
+	GIT_OPT_ENABLE_STRICT_OBJECT_CREATION,
+	GIT_OPT_SET_SSL_CIPHERS,
+	GIT_OPT_GET_USER_AGENT,
 }
 mixin _ExportEnumMembers!git_libgit2_opt_t;
 
