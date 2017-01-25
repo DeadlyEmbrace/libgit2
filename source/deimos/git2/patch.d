@@ -1,5 +1,6 @@
 module deimos.git2.patch;
 
+import deimos.git2.buffer;
 import deimos.git2.common;
 import deimos.git2.types;
 import deimos.git2.oid;
@@ -27,6 +28,17 @@ int git_patch_from_blob_and_buffer(
 	size_t buffer_len,
 	const(char)* buffer_as_path,
 	const(git_diff_options)* opts);
+
+int git_patch_from_buffers(
+	git_patch **out_,
+	const(void)* old_buffer,
+	size_t old_len,
+	const(char)* old_as_path,
+	const(char)* new_buffer,
+	size_t new_len,
+	const(char)* new_as_path,
+	const(git_diff_options) *opts);
+
 void git_patch_free(git_patch *patch);
 const(git_diff_delta)* git_patch_get_delta(git_patch *patch);
 size_t git_patch_num_hunks(git_patch *patch);
@@ -57,6 +69,8 @@ int git_patch_print(
 	git_patch *patch,
 	git_diff_line_cb print_cb,
 	void *payload);
-int git_patch_to_str(
-	char **string,
-	git_patch *patch);
+
+int git_patch_to_buf(
+	git_buf *out_,
+	git_patch *patch
+);

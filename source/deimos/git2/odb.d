@@ -1,10 +1,10 @@
 module deimos.git2.odb;
 
 import deimos.git2.common;
-import deimos.git2.types;
 import deimos.git2.odb_backend;
 import deimos.git2.oid;
 import deimos.git2.sys.odb_backend;
+import deimos.git2.types;
 
 extern (C):
 
@@ -18,10 +18,29 @@ int git_odb_read(git_odb_object **out_, git_odb *db, const(git_oid)* id);
 int git_odb_read_prefix(git_odb_object **out_, git_odb *db, const(git_oid)* short_id, size_t len);
 int git_odb_read_header(size_t *len_out, git_otype *type_out, git_odb *db, const(git_oid)* id);
 int git_odb_exists(git_odb *db, const(git_oid)* id);
+
+int git_odb_exists_prefix(
+	git_oid *out_,
+	git_odb *db,
+	const(git_oid)* short_id,
+	size_t len);
+
+struct git_odb_expand_id{
+	git_oid id;
+	ushort length;
+	git_otype type;
+}
+
+int git_odb_expand_ids(
+	git_odb *id,
+	git_odb_expand_id *ids,
+	size_t count
+);
+
 int git_odb_refresh(git_odb *db);
 int git_odb_foreach(git_odb *db, git_odb_foreach_cb cb, void *payload);
 int git_odb_write(git_oid *out_, git_odb *odb, const(void)* data, size_t len, git_otype type);
-int git_odb_open_wstream(git_odb_stream **out_, git_odb *db, size_t size, git_otype type);
+int git_odb_open_wstream(git_odb_stream **out_, git_odb *db, git_off_t size, git_otype type);
 int git_odb_stream_write(git_odb_stream *stream, const(char)* buffer, size_t len);
 int git_odb_stream_finalize_write(git_oid *out_, git_odb_stream *stream);
 int git_odb_stream_read(git_odb_stream *stream, char *buffer, size_t len);

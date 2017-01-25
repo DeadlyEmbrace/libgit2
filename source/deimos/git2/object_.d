@@ -1,5 +1,6 @@
 module deimos.git2.object_;
 
+import deimos.git2.buffer;
 import deimos.git2.common;
 import deimos.git2.oid;
 import deimos.git2.types;
@@ -19,10 +20,15 @@ int git_object_lookup_prefix(
 		git_otype type);
 int git_object_lookup_bypath(
 		git_object **out_,
-		const git_object *treeish,
+		const(git_object)* treeish,
 		const(char)* path,
 		git_otype type);
 const(git_oid)* git_object_id(const(git_object)* obj);
+
+int git_object_short_id(
+	git_buf *out_,
+	const(git_object)* obj);
+
 git_otype git_object_type(const(git_object)* obj);
 git_repository * git_object_owner(const(git_object)* obj);
 void git_object_free(git_object *object);

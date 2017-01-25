@@ -19,9 +19,18 @@ enum git_error_code {
 	GIT_EUNMERGED = -10,
 	GIT_ENONFASTFORWARD = -11,
 	GIT_EINVALIDSPEC = -12,
-	GIT_EMERGECONFLICT = -13,
+	GIT_ECONFLICT = -13,
 	GIT_ELOCKED = -14,
-
+	GIT_EMODIFIED = -15,
+	GIT_EAUTH = -16,
+	GIT_ECERTIFICATE = -17,
+	GIT_EAPPLIED = -18,
+	GIT_EPEEL = -19,
+	GIT_EEOF = -20,
+	GIT_EINVALID = -21,
+	GIT_EUNCOMMITTED = -22,
+	GIT_EDIRECTORY = -23,
+	GIT_EMERGECONFLICT = -24,
 	GIT_PASSTHROUGH = -30,
 	GIT_ITEROVER = -31,
 }
@@ -58,11 +67,17 @@ enum git_error_t {
 	GITERR_MERGE,
 	GITERR_SSH,
 	GITERR_FILTER,
+	GITERR_REVERT,
+	GITERR_CALLBACK,
+	GITERR_CHERRYPICK,
+	GITERR_DESCRIBE,
+	GITERR_REBASE,
+	GITERR_FILESYSTEM,
+	GITERR_PATCH,
 }
 mixin _ExportEnumMembers!git_error_t;
 
 const(git_error)*  giterr_last();
 void giterr_clear();
-int giterr_detach(git_error *cpy);
 void giterr_set_str(int error_class, const(char)* string);
 void giterr_set_oom();

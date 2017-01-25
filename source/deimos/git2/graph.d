@@ -7,3 +7,8 @@ import deimos.git2.types;
 extern (C):
 
 int git_graph_ahead_behind(size_t *ahead, size_t *behind, git_repository *repo, const(git_oid)* local, const(git_oid)* upstream);
+
+int git_graph_descendant_of(
+    git_repository *repo,
+    const(git_oid)* commit,
+    const(git_oid)* ancestor);

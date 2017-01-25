@@ -1,11 +1,12 @@
 module deimos.git2.message;
 
 import deimos.git2.common;
+import deimos.git2.buffer;
 
 extern (C):
 
 int git_message_prettify(
-	char *out_,
-	size_t out_size,
+	git_buf* out_,
 	const(char)* message,
-	int strip_comments);
+	int strip_comments,
+	char comment_char);

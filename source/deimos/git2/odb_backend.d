@@ -30,8 +30,8 @@ struct git_odb_stream {
 	uint mode;
 	void *hash_ctx;
 
-	size_t declared_size;
-	size_t received_bytes;
+	git_off_t declared_size;
+	git_off_t received_bytes;
 
 	int function(git_odb_stream *stream, char *buffer, size_t len) read;
 	int function(git_odb_stream *stream, const(char)* buffer, size_t len) write;

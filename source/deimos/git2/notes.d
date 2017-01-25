@@ -1,5 +1,6 @@
 module deimos.git2.notes;
 
+import deimos.git2.buffer;
 import deimos.git2.oid;
 import deimos.git2.types;
 
@@ -28,14 +29,19 @@ int git_note_read(
 	git_repository *repo,
 	const(char)* notes_ref,
 	const(git_oid)* oid);
+
+const(git_signature)* git_note_author(const git_note *note);
+
+const(git_signature)* git_note_commiter(const git_note *note);
+
 const(char)*  git_note_message(const(git_note)* note);
-const(git_oid)*  git_note_oid(const(git_note)* note);
+const(git_oid)*  git_note_id(const(git_note)* note);
 int git_note_create(
 	git_oid *out_,
 	git_repository *repo,
+	const(char)* notes_ref,
 	const(git_signature)* author,
 	const(git_signature)* committer,
-	const(char)* notes_ref,
 	const(git_oid)* oid,
 	const(char)* note,
 	int force);
@@ -46,7 +52,7 @@ int git_note_remove(
 	const(git_signature)* committer,
 	const(git_oid)* oid);
 void git_note_free(git_note *note);
-int git_note_default_ref(const(char)** out_, git_repository *repo);
+int git_note_default_ref(git_buf *out_, git_repository *repo);
 int git_note_foreach(
 	git_repository *repo,
 	const(char)* notes_ref,

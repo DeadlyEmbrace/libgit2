@@ -95,7 +95,7 @@ struct git_checkout_options {
 }
 
 enum GIT_CHECKOUT_OPTIONS_VERSION = 1;
-enum git_checkout_options GIT_CHECKOUT_OPTS_INIT = { GIT_CHECKOUT_OPTIONS_VERSION };
+enum git_checkout_options GIT_CHECKOUT_OPTIONS_INIT = { GIT_CHECKOUT_OPTIONS_VERSION };
 
 int git_checkout_init_options(git_checkout_options *opts, uint version_);
 

@@ -2,8 +2,8 @@ module deimos.git2.net;
 
 import deimos.git2.common;
 import deimos.git2.oid;
-import deimos.git2.util;
 import deimos.git2.types;
+import deimos.git2.util;
 
 extern (C):
 
@@ -20,6 +20,7 @@ struct git_remote_head {
 	git_oid oid;
 	git_oid loid;
 	char *name;
+	char *sumref_target;
 }
 
 alias git_headlist_cb = int function(git_remote_head *rhead, void *payload);

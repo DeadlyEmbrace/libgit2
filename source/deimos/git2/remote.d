@@ -14,8 +14,6 @@ import deimos.git2.types;
 
 extern (C):
 
-alias git_remote_rename_problem_cb = int function(const(char)* problematic_refspec, void *payload);
-
 int git_remote_create(
 		git_remote **out_,
 		git_repository *repo,
@@ -27,44 +25,49 @@ int git_remote_create_with_fetchspec(
 		const(char)* name,
 		const(char)* url,
 		const(char)* fetch);
-int git_remote_create_inmemory(
-		git_remote **out_,
-		git_repository *repo,
-		const(char)* fetch,
-		const(char)* url);
-int git_remote_load(git_remote **out_, git_repository *repo, const(char)* name);
-int git_remote_save(const(git_remote)* remote);
+
+int git_remote_create_anonymous(
+	git_remote **out_,
+	git_repository *repo,
+	const(char)* url);
+
+int git_remote_lookup(
+	git_remote **out_,
+	git_repository *repo,
+	const(char)* name);
+
+int git_remote_dup(
+	git_remote **dest,
+	git_remote *source
+);
+
 git_repository* git_remote_owner(const(git_remote)* remote);
 const(char)*  git_remote_name(const(git_remote)* remote);
 const(char)*  git_remote_url(const(git_remote)* remote);
 const(char)*  git_remote_pushurl(const(git_remote)* remote);
-int git_remote_set_url(git_remote *remote, const(char)* url);
-int git_remote_set_pushurl(git_remote *remote, const(char)* url);
-int git_remote_add_fetch(git_remote *remote, const(char)* refspec);
-int git_remote_get_fetch_refspecs(git_strarray *array, git_remote *remote);
-int git_remote_set_fetch_refspecs(git_remote *remote, git_strarray *array);
-int git_remote_add_push(git_remote *remote, const(char)* refspec);
-int git_remote_get_push_refspecs(git_strarray *array, git_remote *remote);
-int git_remote_set_push_refspecs(git_remote *remote, git_strarray *array);
-void git_remote_clear_refspecs(git_remote *remote);
-size_t git_remote_refspec_count(git_remote *remote);
+int git_remote_set_url(git_repository *repo, const(char)* remote, const(char)* url);
+int git_remote_set_pushurl(git_repository *repo, const(char)* remote, const(char)* url);
+int git_remote_add_fetch(git_repository *repo, const(char)* remote, const(char)* refspec);
+int git_remote_get_fetch_refspecs(git_strarray *array, const(git_remote) *remote);
+int git_remote_add_push(git_repository *repo, const(char) *remote, const(char)* refspec);
+int git_remote_get_push_refspecs(git_strarray *array, const(git_remote)* remote);
+
+size_t git_remote_refspec_count(const(git_remote) *remote);
 const(git_refspec)* git_remote_get_refspec(git_remote *remote, size_t n);
-int git_remote_connect(git_remote *remote, git_direction direction);
+
+int git_remote_connect(
+	git_remote *remote,
+	git_direction direction
+	const(git_remote_callbacks)* callbacks,
+	const(git_proxy_options)* proxy_opts,
+	const(git_strarray)* custom_headers);
+
 int git_remote_ls(const(git_remote_head)*** out_,  size_t *size, git_remote *remote);
-int git_remote_download(git_remote *remote);
 int git_remote_connected(git_remote *remote);
 void git_remote_stop(git_remote *remote);
 void git_remote_disconnect(git_remote *remote);
 void git_remote_free(git_remote *remote);
-int git_remote_update_tips(git_remote *remote);
-int git_remote_fetch(git_remote *remote);
-int git_remote_valid_url(const(char)* url);
-int git_remote_supported_url(const(char)* url);
 int git_remote_list(git_strarray *out_, git_repository *repo);
-void git_remote_check_cert(git_remote *remote, int check);
-int git_remote_set_transport(
-	git_remote *remote,
-	git_transport *transport);
 
 enum git_remote_completion_type {
 	GIT_REMOTE_COMPLETION_DOWNLOAD,
@@ -73,11 +76,28 @@ enum git_remote_completion_type {
 }
 mixin _ExportEnumMembers!git_remote_completion_type;
 
+alias git_push_transfer_progress = int function(uint current, uint total, size_t bytes, void *payload);
+
+struct git_push_update
+{
+	char *src_refname;
+	char *dst_refname;
+	git_oid src;
+	git_oid dst;
+}
+
+alias git_push_notification = int function(const(git_push_update)** updates, size_t len, void *payload);
+
 struct git_remote_callbacks {
 	uint version_ = GIT_REMOTE_CALLBACKS_VERSION;
-	int function(const(char)* str, int len, void *data) progress;
+	git_transport_message_cb sideband_progress;
 	int function(git_remote_completion_type type, void *data) completion;
-	int function(git_cred **cred, const(char)* url, const(char)* username_from_url, uint allowed_types, void *data) credentials;
+	git_cred_acquire_cb credentials;
+	git_transport_certificate_check_cb certificate_check;
+	git_transfer_progress_cb transfer_progress;
+	int function(const(char)* refname, const(git_oid)* a, const(git_oid)* b, void *data) update_tips;
+	//TODO - Continue here
+	
 	int function(const(git_transfer_progress)* stats, void *data) transfer_progress;
 	int function(const(char)* refname, const(git_oid)* a, const(git_oid)* b, void *data) update_tips;
 	void *payload;

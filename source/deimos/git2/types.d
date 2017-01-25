@@ -198,6 +198,12 @@ struct git_status_list
     @disable this(this);
 }
 
+struct git_rebase
+{
+    @disable this();
+    @disable this(this);
+}
+
 enum git_ref_t
 {
 	GIT_REF_INVALID = 0,
@@ -289,14 +295,12 @@ enum git_submodule_update_t {
 }
 
 enum git_submodule_ignore_t {
-    GIT_SUBMODULE_IGNORE_RESET     = -1,
+    GIT_SUBMODULE_IGNORE_UNSPECIFIED     = -1,
 
     GIT_SUBMODULE_IGNORE_NONE      = 1,
     GIT_SUBMODULE_IGNORE_UNTRACKED = 2,
     GIT_SUBMODULE_IGNORE_DIRTY     = 3,
     GIT_SUBMODULE_IGNORE_ALL       = 4,
-
-    GIT_SUBMODULE_IGNORE_DEFAULT   = 0
 }
 
 struct git_writestream {

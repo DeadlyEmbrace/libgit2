@@ -3,6 +3,7 @@ Legend
 0 - No changes
 1 - Changes
 2 - New file
+3 - Removed
   - Partial changes
 ---
 
@@ -17,7 +18,32 @@ Legend
 [1] commit.d
 [1] common.d
 [1] config.d
-
+[0] cred_helpers.d
+[2] describe.d
+[1] diff.d
+[1] errors.d
+[1] filter.d
+[2] global.d
+[1] index.d
+[0] indexer.d
+[1] merge.d
+[1] message.d
+[1] net.d
+[1] notes.d
+[1] object.d
+[1] odb.d
+[1] odb_backend.d
+[1] oid.d
+[2] oidarray.d
+[1] patch.d
+[0] pathspec.d
 [2] proxy.d
-[ ] remote.d
+[3] push.d
+[2] rebase.d
+[ ] refdb.d
+[1] refs.d
+[1] refspec.d
+
+
+[ ] remote.d (Continue line 99)
 [ ] types.d
