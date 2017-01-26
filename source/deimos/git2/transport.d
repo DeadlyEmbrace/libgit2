@@ -120,7 +120,7 @@ struct git_transport
 	int function(git_transport *transport,
 		git_repository *repo,
 		git_transfer_progress *stats,
-		git_transfer_progress_callback progress_cb,
+		git_transfer_progress_cb progress_cb,
 		void *progress_payload) download_pack;
 	int function(git_transport *transport) is_connected;
 	int function(git_transport *transport, int *flags) read_flags;

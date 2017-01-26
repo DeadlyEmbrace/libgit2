@@ -1,16 +1,18 @@
 module deimos.git2.remote;
 
+import deimos.git2.buffer;
 import deimos.git2.common;
 import deimos.git2.indexer;
 import deimos.git2.net;
 import deimos.git2.oid;
+import deimos.git2.pack;
 import deimos.git2.proxy;
 import deimos.git2.refspec;
 import deimos.git2.repository;
 import deimos.git2.strarray;
-import deimos.git2.util;
 import deimos.git2.transport;
 import deimos.git2.types;
+import deimos.git2.util;
 
 extern (C):
 
@@ -57,7 +59,7 @@ const(git_refspec)* git_remote_get_refspec(git_remote *remote, size_t n);
 
 int git_remote_connect(
 	git_remote *remote,
-	git_direction direction
+	git_direction direction,
 	const(git_remote_callbacks)* callbacks,
 	const(git_proxy_options)* proxy_opts,
 	const(git_strarray)* custom_headers);
@@ -86,7 +88,7 @@ struct git_push_update
 	git_oid dst;
 }
 
-alias git_push_notification = int function(const(git_push_update)** updates, size_t len, void *payload);
+alias git_push_negotiation = int function(const(git_push_update)** updates, size_t len, void *payload);
 
 struct git_remote_callbacks {
 	uint version_ = GIT_REMOTE_CALLBACKS_VERSION;
@@ -96,15 +98,21 @@ struct git_remote_callbacks {
 	git_transport_certificate_check_cb certificate_check;
 	git_transfer_progress_cb transfer_progress;
 	int function(const(char)* refname, const(git_oid)* a, const(git_oid)* b, void *data) update_tips;
-	//TODO - Continue here
-	
-	int function(const(git_transfer_progress)* stats, void *data) transfer_progress;
-	int function(const(char)* refname, const(git_oid)* a, const(git_oid)* b, void *data) update_tips;
+	git_packbuilder_progress pack_progress;
+	git_push_transfer_progress push_transfer_progress;
+	int function(const(char)* refname, const(char)* status, void *data) push_update_reference;
+	git_push_negotiation push_negotiation;
+	git_transport_cb transport;	
 	void *payload;
 }
 
 enum GIT_REMOTE_CALLBACKS_VERSION = 1;
-enum git_remote_callbacks GIT_REMOTE_CALLBACKS_INIT = { GIT_REMOTE_CALLBACKS_VERSION };
+enum git_remote_callbacks GIT_REMOTE_CALLBACKS_INIT = {GIT_REMOTE_CALLBACKS_VERSION};
+
+int git_remote_init_callbacks(
+	git_remote_callbacks *opts,
+	uint version_
+);
 
 enum git_fetch_prune_t
 {
@@ -113,16 +121,13 @@ enum git_fetch_prune_t
 	GIT_FETCH_NO_PRUNE
 }
 
-int git_remote_set_callbacks(git_remote *remote, git_remote_callbacks *callbacks);
-const(git_transfer_progress)*  git_remote_stats(git_remote *remote);
-
-enum git_remote_autotag_option_t {
+enum git_remote_autotag_option_t
+{
 	GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED = 0,
-	GIT_REMOTE_DOWNLOAD_TAGS_AUTO = 1,
-	GIT_REMOTE_DOWNLOAD_TAGS_NONE = 2,
-	GIT_REMOTE_DOWNLOAD_TAGS_ALL = 3
+	GIT_REMOTE_DOWNLOAD_TAGS_AUTO,
+	GIT_REMOTE_DOWNLOAD_TAGS_NONE,
+	GIT_REMOTE_DOWNLOAD_TAGS_ALL
 }
-mixin _ExportEnumMembers!git_remote_autotag_option_t;
 
 struct git_fetch_options
 {
@@ -136,18 +141,94 @@ struct git_fetch_options
 }
 
 enum GIT_FETCH_OPTIONS_VERSION = 1;
-enum git_fetch_options GIT_FETCH_OPTIONS_INIT = { GIT_FETCH_OPTIONS_VERSION, GIT_REMOTE_CALLBACKS_INIT, git_fetch_prune_t.GIT_FETCH_PRUNE_UNSPECIFIED, 1,
-				 git_remote_autotag_option_t.GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED, GIT_PROXY_OPTIONS_INIT };
+enum git_fetch_options GIT_FETCH_OPTIONS_INIT = {
+	GIT_FETCH_OPTIONS_VERSION,
+	GIT_REMOTE_CALLBACKS_INIT,
+	git_fetch_prune_t.GIT_FETCH_PRUNE_UNSPECIFIED,
+	1,
+	git_remote_autotag_option_t.GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED,
+	GIT_PROXY_OPTIONS_INIT };
 
-git_remote_autotag_option_t git_remote_autotag(git_remote *remote);
-void git_remote_set_autotag(
+int git_fetch_init_options(
+	git_fetch_options *opts,
+	uint version_);
+
+struct git_push_options
+{
+	uint version_ = GIT_PUSH_OPTIONS_VERSION;
+	uint pb_parallelism;
+	git_remote_callbacks callbacks;
+	git_proxy_options proxy_opts;
+	git_strarray custom_headers;
+}
+
+enum GIT_PUSH_OPTIONS_VERSION = 1;
+enum git_push_options GIT_PUSH_OPTIONS_INIT = {
+	GIT_PUSH_OPTIONS_VERSION,
+	0,
+	GIT_REMOTE_CALLBACKS_INIT,
+	GIT_PROXY_OPTIONS_INIT};
+
+int git_push_init_options(
+	git_push_options *opts,
+	uint version_);
+
+int git_remote_download(
 	git_remote *remote,
+	const(git_strarray)* refspecs,
+	const(git_fetch_options)* opts);
+
+int git_remote_upload(
+	git_remote *remote, 
+	const(git_strarray)* refspecs, 
+	const(git_push_options)* opts);
+
+int git_remote_update_tips(
+	git_remote *remote,
+	const(git_remote_callbacks)* callbacks,
+	int update_fetchhead,
+	git_remote_autotag_option_t download_tags,
+	const(char)* reflog_message);
+
+int git_remote_fetch(
+	git_remote *remote,
+	const(git_strarray)* refspecs,
+	const(git_fetch_options)* opts,
+	const(char)* reflog_message);
+
+int git_remote_prune(
+	git_remote *remote,
+	const(git_remote_callbacks)* callbacks);
+
+int git_remote_push(
+	git_remote *remote,
+	const(git_strarray)* refspecs,
+	const(git_push_options)* opts);
+
+const(git_transfer_progress)* git_remote_stats(
+	git_remote *remote);
+
+git_remote_autotag_option_t git_remote_autotag(
+	const(git_remote)* remote);
+
+int git_remote_set_autotag(
+	git_repository *repo,
+	const(char)* remtoe,
 	git_remote_autotag_option_t value);
+
+int git_remote_prune_refs(
+	const(git_remote)* remote);
+
 int git_remote_rename(
-	git_remote *remote,
-	const(char)* new_name,
-	git_remote_rename_problem_cb callback,
-	void *payload);
-int git_remote_update_fetchhead(git_remote *remote);
-void git_remote_set_update_fetchhead(git_remote *remote, int value);
-int git_remote_is_valid_name(const(char)* remote_name);
+	git_strarray *problems,
+	git_repository *repo,
+	const(char)* name,
+	const(char)* new_name);
+
+int git_remote_delete(
+	git_repository *repo,
+	const(char)* name);
+
+int git_remote_default_branch(
+	git_buf *out_,
+	git_remote *remote);

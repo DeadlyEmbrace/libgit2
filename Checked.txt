@@ -43,7 +43,8 @@ Legend
 [ ] refdb.d
 [1] refs.d
 [1] refspec.d
+[1] remote.d
+[1] repository.d
 
 
-[ ] remote.d (Continue line 99)
 [ ] types.d

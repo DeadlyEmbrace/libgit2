@@ -260,7 +260,7 @@ struct git_transfer_progress
 	size_t received_bytes;
 }
 
-alias git_transfer_progress_callback = int function(const(git_transfer_progress)* stats, void* payload);
+alias git_transfer_progress_cb = int function(const(git_transfer_progress)* stats, void* payload);
 
 enum git_cert_t
 {
